@@ -2,7 +2,7 @@ import unittest
 import sys
 sys.path.append('../')
 
-import d05_p1 
+import d05_p1 as d05
 
 class TestD05(unittest.TestCase):
 
@@ -16,7 +16,7 @@ class TestD05(unittest.TestCase):
                 ]
         for data in testData:
             with self.subTest(data=data):
-                self.assertEqual(d05_p1.get_range(data[0], data[1]), data[2])
+                self.assertEqual(d05.get_range(data[0], data[1]), data[2])
 
     def test_seats(self):
         testData = [
@@ -31,7 +31,7 @@ class TestD05(unittest.TestCase):
                 ]
         for data in testData:
             with self.subTest(data=data):
-                self.assertEqual(d05_p1.get_row_col(data[0], data[1]), data[2])
+                self.assertEqual(d05.get_row_col(data[0], data[1]), data[2])
 
     def test_ids(self):
         testData = [
@@ -39,7 +39,7 @@ class TestD05(unittest.TestCase):
                 ]
         for data in testData:
             with self.subTest(data=data):
-                self.assertEqual(d05_p1.get_seat_id(data[0]), data[1])
+                self.assertEqual(d05.get_seat_id(data[0]), data[1])
 
 
 if __name__ == '__main__':

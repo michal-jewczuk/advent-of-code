@@ -2,7 +2,7 @@ import unittest
 import sys
 sys.path.append('../')
 
-import d02
+import d02_p1 as d02
 
 class TestValidate(unittest.TestCase):
 

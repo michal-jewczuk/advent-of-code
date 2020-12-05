@@ -2,7 +2,7 @@ import unittest
 import sys
 sys.path.append('../')
 
-import d01
+import d01_p1 as d01
 
 class TestFindNumbers(unittest.TestCase):
 
