@@ -1,29 +1,24 @@
-package net.jewczuk.aoc.d01;
+package net.jewczuk.aoc.days;
 
 import net.jewczuk.aoc.utils.DayRunner;
-import net.jewczuk.aoc.utils.FileReader;
-import net.jewczuk.aoc.utils.Outputter;
 
 import java.util.List;
 
-public class Day01 implements DayRunner {
+public class Day01 extends DayRunner {
+
+    public Day01() {
+        this.dayNumber = 1;
+        this.className = this.getClass().getSimpleName();
+        populateNumericData();
+    }
 
     @Override
     public void runDay() {
-        List<Integer> exampleData = FileReader.INSTANCE.loadNumericData("d01_example.txt");
-        List<Integer> exerciseData = FileReader.INSTANCE.loadNumericData("d01_exercise.txt");
-
-        Integer example1 = calculateNeededFuel(exampleData);
-        Outputter.INSTANCE.displayExampleResults(this.getClass().getSimpleName(), 1, example1);
-
-        Integer exercise1 = calculateNeededFuel(exerciseData);
-        Outputter.INSTANCE.displayExerciseResults(this.getClass().getSimpleName(), 1, exercise1);
-
-        Integer example2 = calculateNeededFuelWithFuel(exampleData);
-        Outputter.INSTANCE.displayExampleResults(this.getClass().getSimpleName(), 2, example2);
-
-        Integer exercise2 = calculateNeededFuelWithFuel(exerciseData);
-        Outputter.INSTANCE.displayExerciseResults(this.getClass().getSimpleName(), 2, exercise2);
+        results.add(calculateNeededFuel(exampleNumericData));
+        results.add(calculateNeededFuel(exerciseNumericData));
+        results.add(calculateNeededFuelWithFuel(exampleNumericData));
+        results.add(calculateNeededFuelWithFuel(exerciseNumericData));
+        displayResults();
     }
 
     private Integer calculateNeededFuel(List<Integer> data) {
@@ -57,4 +52,5 @@ public class Day01 implements DayRunner {
             }
         }
     }
+
 }

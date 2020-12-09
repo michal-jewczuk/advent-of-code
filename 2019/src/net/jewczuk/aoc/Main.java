@@ -1,6 +1,6 @@
 package net.jewczuk.aoc;
 
-import net.jewczuk.aoc.d01.Day01;
+import net.jewczuk.aoc.days.*;
 import net.jewczuk.aoc.utils.DayRunner;
 import java.util.ArrayList;
 import java.util.List;

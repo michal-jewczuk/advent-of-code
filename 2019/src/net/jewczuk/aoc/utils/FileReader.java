@@ -35,17 +35,3 @@ public enum FileReader {
                 .collect(Collectors.toList());
     }
 }
-
-
-//    // Convert the string to a
-//    // byte array.
-//    String s = "Hello World! ";
-//    byte data[] = s.getBytes();
-//    Path p = Paths.get("./data/logfile.txt");
-//
-//        try (OutputStream out = new BufferedOutputStream(
-//                Files.newOutputStream(p, CREATE, APPEND))) {
-//                out.write(data, 0, data.length);
-//                } catch (IOException x) {
-//                System.err.println(x);
-//                }
