@@ -14,13 +14,6 @@ def get_dep_times(input_data):
 
     return dep_times
 
-def is_divided_by_all(dep_times, time):
-    for dep_time in dep_times:
-        if (time + dep_time[1]) % dep_time[0] != 0:
-            return False
-
-    return True
-
 def get_start_point(start, jump):
     idx = 0
     while True:
@@ -41,7 +34,6 @@ def calculate_time(dep_times, start_point):
 
 def solved13(input_data, start_point):
     dep_times = get_dep_times(input_data)
-    print(dep_times)
 
     return calculate_time(dep_times, start_point)
 

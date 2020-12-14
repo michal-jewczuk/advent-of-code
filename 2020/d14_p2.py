@@ -23,6 +23,8 @@ def get_bin_as_list(binary):
 def apply_mask(binary, mask):
     bin_list = get_bin_as_list(binary)
     for entry in mask:
+        if entry[1] == '0':
+            continue
         bin_list[entry[0]] = entry[1]
 
     return bin_list
@@ -42,25 +44,37 @@ def get_line_info(line):
 
     return mem_address, value
 
+def get_two_variants(pattern, index):
+    p1 = pattern.copy()
+    p2 = pattern.copy()
+    p1[index] = '0'
+    p2[index] = '1'
+
+    return [p1, p2]
+
+def create_partials(partials, idx):
+    result = []
+    for partial in partials:
+        result.extend(get_two_variants(partial, idx))
+
+    return result
+
 def get_all_mem_addresses(wildcard):
-    all_addr = []
-    partials = wildcard
+    partials = [wildcard]
 
     for idx in range(len(wildcard)):
         if wildcard[idx] == 'X':
-            p1 = wildcard.copy()
-            p2 = wildcard.copy()
-            p1[idx] = '0' 
-            p2[idx] = '1'
+            partials = create_partials(partials, idx)
 
-    return all_addr
+    return partials
 
 def write_in_memory(line, mask, memory):
     mem_address, value = get_line_info(line)
     wildcard_address = apply_mask(bin(mem_address), mask)
     possible_addresses = get_all_mem_addresses(wildcard_address)
-    print(possible_addresses)
-    
+
+    for addr in possible_addresses:
+        memory.update({convert_bin_to_int(addr): value})
 
 def run_programm(input_data):
     current_mask =[]
@@ -81,7 +95,6 @@ def calculate_result(memory):
 
     return result
 
-
 def solved14(input_data):
     memory = run_programm(input_data)
 
@@ -92,7 +105,7 @@ if __name__ == '__main__':
     real_data = utils.loadStringData("./data/d14_real.txt")
 
     test = solved14(test_data)
-    #real = solved14(real_data)
+    real = solved14(real_data)
 
     print(utils.OUTPUT_STRING.format("example", test))
-    #print(utils.OUTPUT_STRING.format("exercise", real))
+    print(utils.OUTPUT_STRING.format("exercise", real))
