@@ -93,15 +93,6 @@ def get_longest_match(rule, message):
         else:
             current += rule
 
-def get_part_matching_rule_42(message):
-    rule42 = DECODED.get('42')
-    longest_match = '' 
-    for rule in rule42:
-        match = get_longest_match(rule, message)
-        if len(match) > len(longest_match):
-            longest_match = match
-
-    return longest_match
 
 def does_it_start_with(rules, message):
     for rule in rules:
@@ -110,57 +101,89 @@ def does_it_start_with(rules, message):
 
     return False
 
-def get_set_item_length(items):
-    copy = items.copy()
-    tmp = copy.pop()
-    return len(tmp)
+def are_rules_simple():
+    idx8 = SPECIAL.get('8').find('|')
+    idx11 = SPECIAL.get('11').find('|')
 
-def get_combined_length(rule1, rule2):
-    return get_set_item_length(rule1) + get_set_item_length(rule2) 
+    return (idx8 == -1 and idx11 == -1)
 
-def does_it_match_part_1(message, rule42, rule31):
-    combined = [r42 + r31 for r42 in rule42 for r31 in rule31]
-    return combined.count(message) > 0    
-
-def does_it_match_rule_31x2(message, rule31):
-    combined = [r311 + r312 for r311 in rule31 for r312 in rule31]
-    return combined.count(message) > 0
-
-def does_it_match_part_2(message, rule42, rule31):
-    valid_42 = get_part_matching_rule_42(message)
-    if len(valid_42) == 0:
-        return False
-    message = message[len(valid_42):]
-    len31 = get_set_item_length(rule31) * 2
-
-    if len(message) != len31:
+def is_valid_for_simple(message):
+    decode_single_rule(SPECIAL.get('8'), '8')
+    decode_single_rule(SPECIAL.get('11'), '11')
+    decode_single_rule(SPECIAL.get('0'), '0')
+    variants = DECODED.get('0')
+    try:
+        variants.remove(message)
+        return True
+    except:
         return False
 
-    return does_it_match_rule_31x2(message, rule31)
+def get_matching_length(rules, message, start):
+    for rule in rules:
+        if start:
+            if message.startswith(rule):
+                return len(rule)
+        else:
+            if message.endswith(rule):
+                return (-1 * len(rule))
+    return 0
 
-def is_rest_valid_for_rule_11(message):
-    # 42 31 | 42 11 31
+def get_length_of_rule(key):
+    rule = DECODED.get(key)
+    rule = list(rule)
+    return len(rule[0])
+
+def is_valid_for_multiple_4231(message):
     rule42 = DECODED.get('42')
     rule31 = DECODED.get('31')
 
-    length =  get_combined_length(rule42, rule31)
-    print(len(message), length)
-    if len(message) < length: 
+    while len(message) != 0:
+        len42 = get_matching_length(rule42, message, True)
+        if len42 == 0:
+            return False
+        message = message[len42:]
+        len31 = get_matching_length(rule31, message, False)
+        if len31 == 0:
+            return False
+        message = message[:len31]
+        if len(message) % (-1 * len31 + len42) != 0:
+            return False
+
+    return True
+
+def get_times_matching_42(message):
+    count = 0
+    rule42 = DECODED.get('42')
+
+    while len(message) != 0:
+        len42 = get_matching_length(rule42, message, True)
+        if len42 == 0:
+            return count
+        message = message[len42:]
+        count += 1 
+
+    return 0 
+
+def is_valid_for_combined(message):
+    rule42 = DECODED.get('42')
+    rule31 = DECODED.get('31')
+    len42 = get_length_of_rule('42') 
+    times42 = get_times_matching_42(message)
+    if times42 < 2:
         return False
-    elif len(message) == length:
-        return does_it_match_part_1(message, rule42, rule31)
-    else:
-        return does_it_match_part_2(message, rule42, rule31)
+
+    for i in range(times42):
+        message = message[len42:]
+        if is_valid_for_multiple_4231(message):
+            return True
 
     return False
 
 def is_valid(message):
-    valid_8 = get_part_matching_rule_42(message)
-    if len(valid_8) == 0:
-        return False
-
-    message = message[len(valid_8):]
-    return is_rest_valid_for_rule_11(message)
+    if are_rules_simple():
+        return is_valid_for_simple(message)
+    else:
+        return is_valid_for_combined(message)
     
 def count_matching(messages):
     count = 0
@@ -182,12 +205,12 @@ def solved19(input_data):
 if __name__ == '__main__':
     e2 = utils.loadStringData("./data/d19_example2.txt")
     e3 = utils.loadStringData("./data/d19_example3.txt")
-    #real_data = utils.loadStringData("./data/d19_real2.txt")
+    real_data = utils.loadStringData("./data/d19_real2.txt")
 
     e2r = solved19(e2)
-    #e3r = solved19(e3)
-    #real = solved19(real_data)
+    e3r = solved19(e3)
+    real = solved19(real_data)
 
     print(utils.OUTPUT_STRING.format("example 2", e2r))
-    #print(utils.OUTPUT_STRING.format("example 3", e3r))
-    #print(utils.OUTPUT_STRING.format("exercise", real))
+    print(utils.OUTPUT_STRING.format("example 3", e3r))
+    print(utils.OUTPUT_STRING.format("exercise", real))
