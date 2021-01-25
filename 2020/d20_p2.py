@@ -326,6 +326,72 @@ class MonsterHunter:
         self.image = new_image
         return
 
+    def begin_hunt(self):
+        print('Hunt has started!')
+        print('Searching in current image')
+        if self.are_there_monsters():
+            print('Monsters marked on map')
+        else:
+            print('Flipping image')
+            self.flip()
+            if self.are_there_monsters():
+                print('Monsters marked on map')
+            else:
+                print('Flipping back and rotating')
+                self.flip()
+                self.rotate()
+                if self.are_there_monsters():
+                    print('Monsters marked on map')
+                else:
+                    print('Flipping image')
+                    self.flip()
+                    if self.are_there_monsters():
+                        print('Monsters makred on map')
+                    else:
+                        print('No monsters found!')
+
+        print(self)
+
+        return 
+
+    def are_there_monsters(self):
+        found = False 
+        for row in range(1, len(self.image) - 1):
+            for i in range(len(self.image[row]) - 19):
+                positions = self.get_positions((row,i))
+                if self.are_all_positive(positions):
+                    found = True
+                    self.mark_monster(positions)
+
+        return found 
+
+    def get_positions(self, coords):
+        offsets = [(0,0), (0,5), (0,6), (0,11), (0,12), (0,17), (0,18), (0,19), (-1,18), (1,1), (1,4), (1,7), (1,10), (1,13), (1,16)]
+
+        return [(coords[0] + offset[0], coords[1] + offset[1]) for offset in offsets]
+
+    def are_all_positive(self, positions):
+        for pos in positions:
+            if not self.image[pos[0]][pos[1]] == '#':
+                return False
+
+        return True
+
+    def mark_monster(self, positions):
+        for pos in positions:
+            self.image[pos[0]][pos[1]] = 'O'
+
+        return
+
+    def get_water_roughness(self):
+        count = 0
+        for row in self.image:
+            for el in row:
+                if el == '#':
+                    count += 1
+
+        return count
+
     def __repr__(self):
         output = ''
         for line in self.image:
@@ -365,21 +431,16 @@ def solved20(input_data):
     #print(board.show_board_as_string())
 
     hunter = MonsterHunter(board.joint)
-    print(hunter)
-    hunter.rotate()
-    print(hunter)
-    hunter.flip()
-    print(hunter)
+    hunter.begin_hunt()
 
-
-    return -1
+    return hunter.get_water_roughness() 
 
 if __name__ == '__main__':
     test_data = utils.loadStringData("./data/d20_example.txt")
     real_data = utils.loadStringData("./data/d20_real.txt")
 
     test = solved20(test_data)
-    #real = solved20(real_data)
+    real = solved20(real_data)
 
-    #print(utils.OUTPUT_STRING.format("example", test))
-    #print(utils.OUTPUT_STRING.format("exercise", real))
+    print(utils.OUTPUT_STRING.format("example", test))
+    print(utils.OUTPUT_STRING.format("exercise", real))
