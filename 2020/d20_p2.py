@@ -79,18 +79,11 @@ class Puzzle:
         self.borders = self.extract_borders()
         return
 
-    def adjust(self, start, times, flipp):
-        for i in range(times):
-            self.data = self.rotate()
-
-        if flipp:
-            if start % 2 == 0:
-                self.data = self.flip_v()
-            else:
-                self.data = self.flip_h()
-
-        self.borders = self.extract_borders()
+    def remove_borders(self):
+        new_data = [[self.data[row][col] for col in range(1,len(self.data)-1)] for row in range(1,len(self.data[0])-1)]
+        self.data = new_data
         return
+
 
 class Board:
     def __init__(self, puzzles):
@@ -102,6 +95,8 @@ class Board:
         self.board[size//2, size//2] = chosen.key
         self.completed = []
         self.to_be_done = [chosen]
+        self.full = None
+        self.joint = None
         return
 
     def get_by_key(self, key):
@@ -116,6 +111,9 @@ class Board:
             self.process_one(current)
 
         self.remove_empty_fields()
+        self.full = self.create_full_board()
+        self.run_sanity_check()
+        self.joint = self.join_board()
         return
 
     def process_one(self, center):
@@ -241,7 +239,99 @@ class Board:
 
         return True
 
+    def run_sanity_check(self):
+        #print('running sanity checks')
+        rows = len(self.board)
+        for __i in range(rows - 1):
+            if not self.full[__i,0].data[-1] == self.full[__i+1,0].data[0]:
+                #print(' -> bottom of row {} does not match top of row {}'.format(__i, __i+1))
+                if not self.full[__i,0].data[0] == self.full[__i+1,0].data[0]:
+                    #print(' -> top of row {} does not match top of row {}'.format(__i, __i+1))
+                    if not self.full[__i,0].data[-1] == self.full[__i+1,0].data[-1]:
+                        #print(' -> bottom of row {} does not match bottom of row {}'.format(__i, __i+1))
+                        #print('  -> both need a flip')
+                        for puzzle in self.full[__i]:
+                            puzzle.flip(False)
+                        for puzzle in self.full[__i+1]:
+                            puzzle.flip(False)
+
+                    else:
+                        #print('  -> only bottom needs a flip')
+                        for puzzle in self.full[__i+1]:
+                            puzzle.flip(False)
+                else:
+                    #print('  -> only top needs a flip')
+                    for puzzle in self.full[__i]:
+                        puzzle.flip(False)
+
+        return
+
+    def create_full_board(self):
+        rows = len(self.board)
+        cols = len(self.board[0])
+        copy = np.array([[None for c in range(cols)] for r in range(rows)])
+        for i in range(rows):
+            for j in range(cols):
+                copy[i,j] = self.get_by_key(self.board[i,j])
+
+        return copy
+
+    def join_board(self):
+        for row in self.full:
+            for el in row:
+                el.remove_borders()
+
+        count = len(self.full[0,0].data)
+
+        joint = []
+        for line in self.full:
+            for __j in range(count):
+                tmp = []
+                for el in line:
+                    tmp.extend(el.data[__j])
+
+                joint.append(tmp)
+
+        return joint
+
+    def show_board_as_string(self):
+        output = ''
+        for line in self.joint:
+            output += ''.join(line)
+            output += '\n'
+        return output
+
+class MonsterHunter:
+    def __init__(self, image):
+        self.image = image
+        return
         
+    def rotate(self):
+        rows = len(self.image)
+        cols = len(self.image[0])
+        new_image = [['' for col in range(cols)] for row in range(rows)]
+
+        for i in range(rows):
+            for j in range(cols):
+                new_image[j][cols - i - 1] = self.image[i][j]
+
+        self.image = new_image
+        return
+
+    def flip(self):
+        new_image = []
+        for row in range(len(self.image)):
+            new_image.append(self.image[row][::-1])
+
+        self.image = new_image
+        return
+
+    def __repr__(self):
+        output = ''
+        for line in self.image:
+            output += ''.join(line)
+            output += '\n'
+        return output
 
 def extract_puzzles(lines):
     is_puzzle = False
@@ -272,8 +362,15 @@ def solved20(input_data):
 
     board = Board(puzzles)
     board.solve_board()
+    #print(board.show_board_as_string())
 
-    print(board.board)
+    hunter = MonsterHunter(board.joint)
+    print(hunter)
+    hunter.rotate()
+    print(hunter)
+    hunter.flip()
+    print(hunter)
+
 
     return -1
 
@@ -282,7 +379,7 @@ if __name__ == '__main__':
     real_data = utils.loadStringData("./data/d20_real.txt")
 
     test = solved20(test_data)
-    real = solved20(real_data)
+    #real = solved20(real_data)
 
     #print(utils.OUTPUT_STRING.format("example", test))
     #print(utils.OUTPUT_STRING.format("exercise", real))
