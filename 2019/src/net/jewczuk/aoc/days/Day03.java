@@ -19,19 +19,30 @@ public class Day03 extends DayRunner {
     public void runDay() {
         results.add(solvePart1(exampleStringData));
         results.add(solvePart1(exerciseStringData));
+        results.add(solvePart2(exampleStringData));
+        results.add(solvePart2(exerciseStringData));
         displayResults();
     }
 
     private int solvePart1(List<String> data) {
-        Tuple start = new Tuple(0,0);
-        Set<Tuple> path1 = generateCoordsSet(extractDirections(data.get(0)), start);
-        Set<Tuple> path2 = generateCoordsSet(extractDirections(data.get(1)), start);
+        List<Set<Tuple>> paths = createPaths(data);
 
-        return findManhatanDistance(path1, path2);
+        return findManhatanDistance(paths.get(0), paths.get(1));
     }
 
     private int solvePart2(List<String> data) {
-        return -1;
+        List<Set<Tuple>> paths = createPaths(data);
+        List<Tuple> path1 = findJointPoints(paths.get(0), paths.get(1));
+        List<Tuple> path2 = findJointPoints(paths.get(1), paths.get(0));
+
+        return findFewestCombinedSteps(path1, path2);
+    }
+
+    private List<Set<Tuple>> createPaths(List<String> data) {
+        Tuple start = new Tuple(0,0);
+        return data.stream()
+                .map(el -> generateCoordsSet(extractDirections(el), start))
+                .collect(Collectors.toList());
     }
 
     private List<String> extractDirections(String input) {
@@ -45,7 +56,6 @@ public class Day03 extends DayRunner {
         for(int i = 0; i < size; i++) {
             current = appendNewCoords(result, current, values.get(i));
         }
-
         return result;
     }
 
@@ -67,19 +77,40 @@ public class Day03 extends DayRunner {
                 .min().orElse(-1);
     }
 
+    private List<Tuple> findJointPoints(Set<Tuple> target, Set<Tuple> toLookIn) {
+        return target.stream().filter(el -> toLookIn.contains(el)).collect(Collectors.toList());
+    }
 
-    private class Tuple {
+    private int findFewestCombinedSteps(List<Tuple> first, List<Tuple> second) {
+        Collections.sort(first);
+        Collections.sort(second);
+        int size = first.size();
+        int min = Integer.MAX_VALUE;
+        for(int i = 0; i < size; i++) {
+            int tmp = first.get(i).getLength() + second.get(i).getLength();
+            if(tmp < min) {
+                min = tmp;
+            }
+        }
+        return min;
+    }
+
+
+    private class Tuple implements Comparable<Tuple> {
         int first;
         int second;
+        int length;
 
         Tuple(int first, int second) {
             this.first = first;
             this.second = second;
+            this.length = 0;
         }
 
         Tuple(Tuple old) {
             this.first = old.getFirst();
             this.second = old.getSecond();
+            this.length = old.getLength();
         }
 
         Tuple(Tuple old, String direction) {
@@ -90,6 +121,7 @@ public class Day03 extends DayRunner {
                 this.first = old.getFirst();
                 this.second = old.getSecond() + transformDirection(direction);
             }
+            this.length = old.getLength() + 1;
         }
 
         private int transformDirection(String direction) {
@@ -97,6 +129,15 @@ public class Day03 extends DayRunner {
                 return 1;
             } else {
                 return -1;
+            }
+        }
+
+        @Override
+        public int compareTo(Tuple o) {
+            if (this.getFirst() != o.getFirst()) {
+                return this.getFirst() - o.getFirst();
+            } else {
+                return this.getSecond() - o.getSecond();
             }
         }
 
@@ -116,6 +157,14 @@ public class Day03 extends DayRunner {
             this.second = second;
         }
 
+        public int getLength() {
+            return length;
+        }
+
+        public void setLength(int length) {
+            this.length = length;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -132,7 +181,7 @@ public class Day03 extends DayRunner {
 
         @Override
         public String toString() {
-            return "(" + first + "," + second + ')';
+            return "(" + first + "," + second + ")[" + length + "]";
         }
     }
 
