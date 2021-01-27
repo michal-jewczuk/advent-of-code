@@ -16,6 +16,7 @@ public class Main {
         List<DayRunner> runners = new ArrayList<>();
         runners.add(new Day01());
         runners.add(new Day02());
+        runners.add(new Day03());
 
         return runners;
     }
