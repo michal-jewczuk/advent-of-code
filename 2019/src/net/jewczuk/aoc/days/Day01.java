@@ -14,10 +14,11 @@ public class Day01 extends DayRunner {
 
     @Override
     public void runDay() {
-        results.add(calculateNeededFuel(exampleNumericData));
-        results.add(calculateNeededFuel(exerciseNumericData));
-        results.add(calculateNeededFuelWithFuel(exampleNumericData));
-        results.add(calculateNeededFuelWithFuel(exerciseNumericData));
+        addResults(1, ResultType.EXAMPLE, calculateNeededFuel(exampleNumericData));
+        addResults(1, ResultType.EXERCISE, calculateNeededFuel(exerciseNumericData));
+
+        addResults(2, ResultType.EXAMPLE, calculateNeededFuelWithFuel(exampleNumericData));
+        addResults(2, ResultType.EXERCISE, calculateNeededFuelWithFuel(exerciseNumericData));
         displayResults();
     }
 

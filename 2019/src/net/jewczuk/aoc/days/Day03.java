@@ -1,6 +1,7 @@
 package net.jewczuk.aoc.days;
 
 import net.jewczuk.aoc.utils.DayRunner;
+import net.jewczuk.aoc.utils.FileReader;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -17,10 +18,17 @@ public class Day03 extends DayRunner {
 
     @Override
     public void runDay() {
-        results.add(solvePart1(exampleStringData));
-        results.add(solvePart1(exerciseStringData));
-        results.add(solvePart2(exampleStringData));
-        results.add(solvePart2(exerciseStringData));
+        List<String> additionalData1 = FileReader.INSTANCE.loadStringData("d03_additional_1.txt");
+        List<String> additionalData2 = FileReader.INSTANCE.loadStringData("d03_additional_2.txt");
+        addResults(1, ResultType.EXAMPLE, solvePart1(exampleStringData));
+        addResults(1, ResultType.ADDITIONAL, solvePart1(additionalData1));
+        addResults(1, ResultType.ADDITIONAL, solvePart1(additionalData2));
+        addResults(1, ResultType.EXERCISE, solvePart1(exerciseStringData));
+
+        addResults(2, ResultType.EXAMPLE, solvePart2(exampleStringData));
+        addResults(2, ResultType.ADDITIONAL, solvePart2(additionalData1));
+        addResults(2, ResultType.ADDITIONAL, solvePart2(additionalData2));
+        addResults(2, ResultType.EXERCISE, solvePart2(exerciseStringData));
         displayResults();
     }
 

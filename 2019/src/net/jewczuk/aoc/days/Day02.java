@@ -18,10 +18,11 @@ public class Day02 extends DayRunner {
     @Override
     public void runDay() {
         transformInputDataToList();
-        results.add(applyOpcodes(exampleNumericData).get(0));
-        results.add(applyOpcodes(exerciseNumericData).get(0));
-        results.add(calculateNounVerb(exampleNumericData));
-        results.add(calculateNounVerb(exerciseNumericData));
+        addResults(1, ResultType.EXAMPLE, applyOpcodes(exampleNumericData).get(0));
+        addResults(1, ResultType.EXERCISE, applyOpcodes(exerciseNumericData).get(0));
+
+        addResults(2, ResultType.EXAMPLE, calculateNounVerb(exampleNumericData));
+        addResults(2, ResultType.EXERCISE, calculateNounVerb(exerciseNumericData));
         displayResults();
     }
 
