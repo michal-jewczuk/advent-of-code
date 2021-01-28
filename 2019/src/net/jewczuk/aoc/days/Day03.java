@@ -33,21 +33,21 @@ public class Day03 extends DayRunner {
     }
 
     private int solvePart1(List<String> data) {
-        List<Set<Tuple>> paths = createPaths(data);
+        List<Set<Location>> paths = createPaths(data);
 
         return findManhatanDistance(paths.get(0), paths.get(1));
     }
 
     private int solvePart2(List<String> data) {
-        List<Set<Tuple>> paths = createPaths(data);
-        List<Tuple> path1 = findJointPoints(paths.get(0), paths.get(1));
-        List<Tuple> path2 = findJointPoints(paths.get(1), paths.get(0));
+        List<Set<Location>> paths = createPaths(data);
+        List<Location> path1 = findJointPoints(paths.get(0), paths.get(1));
+        List<Location> path2 = findJointPoints(paths.get(1), paths.get(0));
 
         return findFewestCombinedSteps(path1, path2);
     }
 
-    private List<Set<Tuple>> createPaths(List<String> data) {
-        Tuple start = new Tuple(0,0);
+    private List<Set<Location>> createPaths(List<String> data) {
+        Location start = new Location(0,0);
         return data.stream()
                 .map(el -> generateCoordsSet(extractDirections(el), start))
                 .collect(Collectors.toList());
@@ -57,9 +57,9 @@ public class Day03 extends DayRunner {
         return Arrays.asList(input.split(","));
     }
 
-    private Set<Tuple> generateCoordsSet(List<String> values, Tuple start) {
-        Set<Tuple> result = new HashSet<>();
-        Tuple current = new Tuple(start);
+    private Set<Location> generateCoordsSet(List<String> values, Location start) {
+        Set<Location> result = new HashSet<>();
+        Location current = new Location(start);
         int size = values.size();
         for(int i = 0; i < size; i++) {
             current = appendNewCoords(result, current, values.get(i));
@@ -67,29 +67,29 @@ public class Day03 extends DayRunner {
         return result;
     }
 
-    private Tuple appendNewCoords(Set<Tuple> all, Tuple start, String coords) {
+    private Location appendNewCoords(Set<Location> all, Location start, String coords) {
         String direction = coords.substring(0,1);
         int times = Integer.parseInt(coords.substring(1));
         for(int i = 1; i <= times; i++) {
-            start = new Tuple(start, direction);
+            start = new Location(start, direction);
             all.add(start);
         }
 
         return start;
     }
 
-    private int findManhatanDistance(Set<Tuple> first, Set<Tuple> second) {
+    private int findManhatanDistance(Set<Location> first, Set<Location> second) {
         return first.stream()
                 .filter(e -> second.contains(e))
                 .mapToInt(t -> abs(t.getFirst()) + abs(t.getSecond()))
                 .min().orElse(-1);
     }
 
-    private List<Tuple> findJointPoints(Set<Tuple> target, Set<Tuple> toLookIn) {
+    private List<Location> findJointPoints(Set<Location> target, Set<Location> toLookIn) {
         return target.stream().filter(el -> toLookIn.contains(el)).collect(Collectors.toList());
     }
 
-    private int findFewestCombinedSteps(List<Tuple> first, List<Tuple> second) {
+    private int findFewestCombinedSteps(List<Location> first, List<Location> second) {
         Collections.sort(first);
         Collections.sort(second);
         int size = first.size();
@@ -104,24 +104,24 @@ public class Day03 extends DayRunner {
     }
 
 
-    private class Tuple implements Comparable<Tuple> {
+    private class Location implements Comparable<Location> {
         int first;
         int second;
         int length;
 
-        Tuple(int first, int second) {
+        Location(int first, int second) {
             this.first = first;
             this.second = second;
             this.length = 0;
         }
 
-        Tuple(Tuple old) {
+        Location(Location old) {
             this.first = old.getFirst();
             this.second = old.getSecond();
             this.length = old.getLength();
         }
 
-        Tuple(Tuple old, String direction) {
+        Location(Location old, String direction) {
             if (direction.equals("R")  || direction.equals("L")) {
                 this.first = old.getFirst() + transformDirection(direction);
                 this.second = old.getSecond();
@@ -141,7 +141,7 @@ public class Day03 extends DayRunner {
         }
 
         @Override
-        public int compareTo(Tuple o) {
+        public int compareTo(Location o) {
             if (this.getFirst() != o.getFirst()) {
                 return this.getFirst() - o.getFirst();
             } else {
@@ -153,31 +153,19 @@ public class Day03 extends DayRunner {
             return first;
         }
 
-        public void setFirst(int first) {
-            this.first = first;
-        }
-
         public int getSecond() {
             return second;
-        }
-
-        public void setSecond(int second) {
-            this.second = second;
         }
 
         public int getLength() {
             return length;
         }
 
-        public void setLength(int length) {
-            this.length = length;
-        }
-
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            Tuple tuple = (Tuple) o;
+            Location tuple = (Location) o;
             return first == tuple.first &&
                     second == tuple.second;
         }
