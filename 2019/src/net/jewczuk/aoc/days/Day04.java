@@ -12,7 +12,6 @@ public class Day04 extends DayRunner {
     public Day04() {
         this.dayNumber = 4;
         this.className = this.getClass().getSimpleName();
-        populateNumericData();
     }
 
     @Override
