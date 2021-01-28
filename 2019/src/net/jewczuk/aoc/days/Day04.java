@@ -17,7 +17,9 @@ public class Day04 extends DayRunner {
 
     @Override
     public void runDay() {
-        addResults(1, ResultType.EXERCISE, solvePart1("145852-616942"));
+        String input = "145852-616942";
+        addResults(1, ResultType.EXERCISE, solvePart1(input));
+        addResults(2, ResultType.EXERCISE, solvePart2(input));
 
         displayResults();
     }
@@ -25,6 +27,16 @@ public class Day04 extends DayRunner {
     private int solvePart1(String data) {
         List<Integer> borders = extractBorders(data);
         List<Integer> passwords = generatePasswords(borders);
+
+        return passwords.size();
+    }
+
+    private int solvePart2(String data) {
+        List<Integer> borders = extractBorders(data);
+        List<Integer> passwords = generatePasswords(borders);
+        passwords = passwords.stream()
+                .filter(p -> isValidForPart2(p))
+                .collect(Collectors.toList());
 
         return passwords.size();
     }
@@ -61,6 +73,27 @@ public class Day04 extends DayRunner {
         }
 
         return hasDouble;
+    }
+
+    private boolean isValidForPart2(int password) {
+        String toCheck = String.valueOf(password);
+        char currDouble = toCheck.charAt(0);
+        int doubleSize = 1;
+        for(int i = 1; i < 6; i++) {
+            char ch = toCheck.charAt(i);
+            if (currDouble == ch) {
+                doubleSize++;
+            } else {
+                if (doubleSize == 2) {
+                    return true;
+                } else {
+                    doubleSize = 1;
+                }
+            }
+            currDouble = ch;
+        }
+
+        return doubleSize == 2;
     }
 
 }
