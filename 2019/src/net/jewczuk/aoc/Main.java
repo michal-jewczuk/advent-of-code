@@ -19,6 +19,7 @@ public class Main {
         runners.add(new Day03());
         runners.add(new Day04());
         runners.add(new Day05());
+        runners.add(new Day06());
 
         return runners;
     }
