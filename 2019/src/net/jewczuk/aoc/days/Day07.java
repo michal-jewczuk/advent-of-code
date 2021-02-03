@@ -4,12 +4,14 @@ import net.jewczuk.aoc.utils.DayRunner;
 import net.jewczuk.aoc.utils.FileReader;
 import net.jewczuk.aoc.utils.Outputter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
 public class Day07 extends DayRunner {
+
+    BlockingQueue<Integer> finalOutput = new LinkedBlockingQueue<>();
 
     public Day07() {
         this.dayNumber = 7;
@@ -20,6 +22,8 @@ public class Day07 extends DayRunner {
     public void runDay() {
         List<Integer> additionalData1 = transformInputDataToList("d07_additional_1.txt");
         List<Integer> additionalData2 = transformInputDataToList("d07_additional_2.txt");
+        List<Integer> additionalData3 = transformInputDataToList("d07_additional_3.txt");
+        List<Integer> additionalData4 = transformInputDataToList("d07_additional_4.txt");
         exampleNumericData = transformInputDataToList("d07_example.txt");
         exerciseNumericData = transformInputDataToList("d07_exercise.txt");
 
@@ -28,6 +32,10 @@ public class Day07 extends DayRunner {
         Outputter.INSTANCE.displayResuls(className, 1, solvePart1(additionalData1), ResultType.ADDITIONAL.toString());
         Outputter.INSTANCE.displayResuls(className, 1, solvePart1(additionalData2), ResultType.ADDITIONAL.toString());
         Outputter.INSTANCE.displayResuls(className, 1, solvePart1(exerciseNumericData), ResultType.EXERCISE.toString());
+
+        Outputter.INSTANCE.displayResuls(className, 2, solvePart2(additionalData3), ResultType.ADDITIONAL.toString());
+        Outputter.INSTANCE.displayResuls(className, 2, solvePart2(additionalData4), ResultType.ADDITIONAL.toString());
+        Outputter.INSTANCE.displayResuls(className, 2, solvePart2(exerciseNumericData), ResultType.EXERCISE.toString());
 
         Outputter.INSTANCE.displayBreakLine(dayNumber);
     }
@@ -41,12 +49,12 @@ public class Day07 extends DayRunner {
     }
 
     private int solvePart1(List<Integer> initialData) {
-        List<List<Integer>> sequences = generateSequences(5);
+        List<List<Integer>> sequences = generateSequences(Arrays.asList(1,2,3,4,5));
         int maxValue = 0;
         List<Integer> maxSeq = null;
         int limit = sequences.size();
         for (int i = 0; i < limit; i++) {
-            int seq = runForSequence(sequences.get(i), initialData);
+            int seq = runSingleMode(sequences.get(i), initialData);
             if (seq > maxValue) {
                 maxValue = seq;
                 maxSeq = sequences.get(i);
@@ -56,35 +64,119 @@ public class Day07 extends DayRunner {
         return maxValue;
     }
 
-    private List<List<Integer>> generateSequences(int thrustersCount) {
-        List<List<Integer>> sequences = new ArrayList<>();
+    private int solvePart2(List<Integer> initialData) {
+        List<List<Integer>> sequences = generateSequences(Arrays.asList(5,6,7,8,9));
 
-        for (int i = 0; i < thrustersCount; i++) {
-            sequences.add(Arrays.asList(i));
+        int maxValue = 0;
+        List<Integer> maxSeq = null;
+        int limit = sequences.size();
+        for (int i = 0; i < limit; i++) {
+            int seq = runLoopMode(sequences.get(i), initialData);
+            if (seq > maxValue) {
+                maxValue = seq;
+                maxSeq = sequences.get(i);
+            }
         }
-        for (int i = 1; i < thrustersCount; i++) {
-            sequences = extendSequence(sequences, thrustersCount);
+        System.out.println(maxSeq);
+        return maxValue;
+    }
+
+    private int runLoopMode(List<Integer> sequence, List<Integer> data) {
+        List<Integer> stateA = new ArrayList<>(data);
+        List<Integer> stateB = new ArrayList<>(data);
+        List<Integer> stateC = new ArrayList<>(data);
+        List<Integer> stateD = new ArrayList<>(data);
+        List<Integer> stateE = new ArrayList<>(data);
+        BlockingQueue<Integer> inputsA = new LinkedBlockingQueue<>();
+        BlockingQueue<Integer> inputsB = new LinkedBlockingQueue<>();
+        BlockingQueue<Integer> inputsC = new LinkedBlockingQueue<>();
+        BlockingQueue<Integer> inputsD = new LinkedBlockingQueue<>();
+        BlockingQueue<Integer> inputsE = new LinkedBlockingQueue<>();
+        inputsA.add(0);
+
+        Thread tA = new Thread(() -> {runAmplifier(stateA, sequence.get(0), inputsA, inputsB, "A");});
+        Thread tB = new Thread(() -> {runAmplifier(stateB, sequence.get(1), inputsB, inputsC, "B");});
+        Thread tC = new Thread(() -> {runAmplifier(stateC, sequence.get(2), inputsC, inputsD, "C");});
+        Thread tD = new Thread(() -> {runAmplifier(stateD, sequence.get(3), inputsD, inputsE, "D");});
+        Thread tE = new Thread(() -> {runAmplifier(stateE, sequence.get(4), inputsE, inputsA, "E");});
+        tA.start();
+        tB.start();
+        tC.start();
+        tD.start();
+        tE.start();
+
+        try {
+            return finalOutput.take();
+        } catch (InterruptedException e) {
+            return -1;
+        }
+
+    }
+
+    private int runAmplifier(List<Integer> state, int phase, BlockingQueue<Integer> inputs, BlockingQueue<Integer> outputs, String tag) {
+        int idx = 0;
+        int output = 0;
+        int inputCount = 0;
+
+        try {
+            while (true) {
+                int oppCode = state.get(idx);
+
+                if (oppCode == 99) {
+                    if (tag.equals("E")) {
+                        finalOutput.add(output);
+                    }
+                    break;
+                } else if (oppCode == 4) {
+                    output = applyOutputOperation(oppCode, idx, state);
+                    outputs.put(output);
+                    idx += 2;
+                } else if (oppCode == 3) {
+                    int value = inputCount > 0 ? inputs.take() : phase;
+                    state.set(state.get(idx + 1), value);
+                    inputCount++;
+                    idx += 2;
+                } else {
+                    idx = applyOperation(oppCode, idx, state);
+                }
+            }
+        } catch (InterruptedException e) {
+            System.out.println("Nobody expects Spanish Inquisition!");
+        }
+
+        return -1;
+    }
+
+    private List<List<Integer>> generateSequences(List<Integer> elements) {
+        List<List<Integer>> sequences = new ArrayList<>();
+        int count = elements.size();
+
+        for (int i = 0; i < count; i++) {
+            sequences.add(Arrays.asList(elements.get(i)));
+        }
+        for (int i = 1; i < count; i++) {
+            sequences = extendSequence(sequences, elements);
         }
 
         return sequences;
     }
 
-    private List<List<Integer>> extendSequence(List<List<Integer>> current, int count) {
+    private List<List<Integer>> extendSequence(List<List<Integer>> current, List<Integer> elements) {
         List<List<Integer>> newSeq = new ArrayList<>();
-        current.forEach(el -> {
-            for (int i = 0; i < count; i++) {
-                if (!el.contains(i)) {
-                    List<Integer> newEl = new ArrayList<>(el);
-                    newEl.add(i);
+        current.forEach(curr -> {
+            elements.forEach(el -> {
+                if (!curr.contains(el)) {
+                    List<Integer> newEl = new ArrayList<>(curr);
+                    newEl.add(el);
                     newSeq.add(newEl);
                 }
-            }
+            });
         });
 
         return newSeq;
     }
 
-    private int runForSequence(List<Integer> sequence, List<Integer> data) {
+    private int runSingleMode(List<Integer> sequence, List<Integer> data) {
         List<Integer> allowedCodes = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);
 
         List<Integer> inputs = Arrays.asList(sequence.get(0), 0);
