@@ -4,8 +4,8 @@ import scala.annotation.tailrec
 
 object Day01_2 extends App {
 
-  val depthsExample = loadData("d011e.txt").get.map(_.toInt)
-  val depths = loadData("d011.txt").get.map(_.toInt)
+  val depthsExample = loadData("d01e.txt").get.map(_.toInt)
+  val depths = loadData("d01.txt").get.map(_.toInt)
 
   def countChanges(list: List[Int]): Int = {
     @tailrec
