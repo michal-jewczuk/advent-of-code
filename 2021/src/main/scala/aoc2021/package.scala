@@ -8,4 +8,13 @@ package object aoc2021 {
       Iterator.continually(reader.getLines()).next().toList}
   }
 
+  def binaryToInt(binary: String): Int = {
+    var result = 0
+    (0 until binary.length).foreach(pos => {
+      if (binary.charAt(pos).equals('1')) result += (1 << (binary.length - pos - 1))
+    })
+
+    result
+  }
+
 }
