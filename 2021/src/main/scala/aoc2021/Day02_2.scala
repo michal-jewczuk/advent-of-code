@@ -19,9 +19,11 @@ object Day02_2 extends App {
     }
 
     def adjustForwardDepthAim(command: (String, Int), metrics: (Int, Int, Int)): (Int, Int, Int) = {
-      if (command._1.equals("down")) (metrics._1, metrics._2, metrics._3 + command._2)
-      else if (command._1.equals("up")) (metrics._1, metrics._2, metrics._3 - command._2)
-      else (metrics._1 + command._2, metrics._2 + command._2 * metrics._3, metrics._3)
+      val (forward, depth, aim) = metrics
+      val (direction, value) = command
+      if (direction.equals("down")) (forward, depth, aim + value)
+      else if (direction.equals("up")) (forward, depth, aim - value)
+      else (forward + value, depth + value * aim, aim)
     }
 
     accumulate(directions, (0, 0, 0))

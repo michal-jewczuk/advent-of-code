@@ -19,8 +19,9 @@ object Day03_1 extends App {
     }
 
     def addByte(gamEps: (String, String), p: Int): (String, String) = {
-      if (countNumberOfZerosAtPosition(lines, p) * 2 > lines.size) (gamEps._1 + "0", gamEps._2 + "1")
-      else (gamEps._1 + "1", gamEps._2 + "0")
+      val (gamma, epsilon) = gamEps
+      if (countNumberOfZerosAtPosition(lines, p) * 2 > lines.size) (gamma + "0", epsilon + "1")
+      else (gamma + "1", epsilon + "0")
     }
 
     accumulate(("", ""),0)
