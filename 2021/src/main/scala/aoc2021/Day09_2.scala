@@ -45,10 +45,8 @@ object Day09_2 extends App {
     def bfs(basin: Set[(Int, Int)], checked: Set[(Int, Int)]): Set[(Int, Int)] = {
       if (checked.isEmpty) basin
       else {
-        val current = checked.head
         val higher = getHigherPoints(checked.head)
-        if (higher.isEmpty) bfs(basin + current, checked.tail)
-        else bfs(basin + current, checked.tail ++ higher)
+        bfs(basin + checked.head, checked.tail ++ higher)
       }
     }
 
