@@ -8,14 +8,6 @@ object Day09_2 extends App {
   val heightmapE = convertToArray(loadData("d09e.txt").get)
   val heightmap = convertToArray(loadData("d09.txt").get)
 
-  def convertToArray(lines: List[String]): Array[Array[Int]] = {
-    val result = Array.ofDim[Int](lines.size, lines.head.length)
-    lines.indices.foreach(n => {
-      result(n) = lines(n).toList.map(_.toString).map(_.toInt).toArray
-    })
-    result
-  }
-
   def isLowestPoint(all: Array[Array[Int]], row: Int, col: Int): Boolean = {
     def isOffsetHigher(point: (Int, Int)): Boolean = {
       Try(all(row + point._1)(col + point._2))

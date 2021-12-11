@@ -17,4 +17,12 @@ package object aoc2021 {
     result
   }
 
+  def convertToArray(lines: List[String]): Array[Array[Int]] = {
+    val result = Array.ofDim[Int](lines.size, lines.head.length)
+    lines.indices.foreach(n => {
+      result(n) = lines(n).toList.map(_.toString).map(_.toInt).toArray
+    })
+    result
+  }
+
 }
