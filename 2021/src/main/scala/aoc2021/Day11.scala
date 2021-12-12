@@ -3,7 +3,7 @@ package aoc2021
 import scala.annotation.tailrec
 import scala.util.Try
 
-object Day11_1 extends App {
+object Day11 extends App {
 
   val octopusesE = convertToArray(loadData("d11e.txt").get)
   val octopuses = convertToArray(loadData("d11.txt").get)
@@ -22,7 +22,7 @@ object Day11_1 extends App {
           else internal(row)(col)).toArray)
         .toArray
     }
-    
+
     def flash(row: Int, col: Int): Unit = {
       Seq((1,0), (1,-1), (0,-1), (-1,-1), (-1,0), (-1,1), (0,1), (1,1))
         .filter(point => Try(internal(row + point._1)(col + point._2)).isSuccess)
