@@ -51,7 +51,4 @@ object Day20 extends App {
 
   println(countHashes(enhanced50E))
   println(countHashes(enhanced50))
-
-//  println(enhanced2E.map(_.mkString(" ")).mkString("\n"))
-//  println(enhanced2.map(_.mkString(" ")).mkString("\n"))
 }
