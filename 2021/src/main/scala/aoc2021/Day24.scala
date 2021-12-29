@@ -29,7 +29,7 @@ object Day24 extends App {
 
   def findModelNumber(list: List[String]): Unit = {
     val alu = decodeAlu(list)
-    
+
     def calculateValue(isMax: Boolean): String = {
       val criticalOps = (0 to 13).map(n => (alu(5 + 18 * n)._3.toInt, alu(15 + 18 * n)._3.toInt))
       val connections: mutable.Map[Int, (Int, Int)] = mutable.Map()
