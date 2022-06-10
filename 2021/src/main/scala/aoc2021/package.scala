@@ -17,6 +17,15 @@ package object aoc2021 {
     result
   }
 
+  def binaryToLong(binary: String): Long = {
+    var result = 0l
+    (0 until binary.length).foreach(pos => {
+      if (binary.charAt(pos).equals('1')) result += (1l << (binary.length - pos - 1))
+    })
+
+    result
+  }
+
   def convertToArray(lines: List[String]): Array[Array[Int]] = {
     val result = Array.ofDim[Int](lines.size, lines.head.length)
     lines.indices.foreach(n => {
