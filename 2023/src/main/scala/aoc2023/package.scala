@@ -10,7 +10,7 @@ package object aoc2023 {
   }
 
   def loadNumerics(file: String): List[Int] = {
-    loadData(file).get.map(_.toInt);
+    loadData(file).get.map(_.toInt)
   }
 
   def loadStrings(file: String): List[String] = {
@@ -18,11 +18,13 @@ package object aoc2023 {
   }
 
   def binaryToLong(binary: String): Long = {
-    var result = 0l
+    var result = 0L
     (0 until binary.length).foreach(pos => {
-      if (binary.charAt(pos).equals('1')) result += (1l << (binary.length - pos - 1))
+      if (binary.charAt(pos).equals('1')) result += (1L << (binary.length - pos - 1))
     })
 
     result
   }
+
+  //println(linesE.map(l => l.mkString("", "","\n")).mkString("", "",""))
 }
