@@ -1,3 +1,4 @@
+import scala.annotation.tailrec
 import scala.io.Source
 import scala.util.{Try, Using}
 
@@ -24,6 +25,16 @@ package object aoc2023 {
     })
 
     result
+  }
+
+  // inspired by: https://stackoverflow.com/questions/40875537/fp-lcm-in-scala-in-1-line
+  def calculateLCM(list: List[Long]): Long = {
+    @tailrec def gdc(a: Long, b: Long): Long = {
+      if (b == 0) a
+      else gdc(b, a % b)
+    }
+
+    list.foldLeft(1L)((a, b) => (a / gdc(a, b)) * b)
   }
 
   //println(linesE.map(l => l.mkString("", "","\n")).mkString("", "",""))
