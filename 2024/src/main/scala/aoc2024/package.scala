@@ -20,7 +20,7 @@ package object aoc2024 {
   def binaryToLong(binary: String): Long = {
     var result = 0L
     (0 until binary.length).foreach(pos => {
-      if (binary.charAt(pos).equals('1')) result += (1L << (binary.length - pos - 1))
+      if (binary.charAt(pos).equals('1')) result += (2L << (binary.length - pos - 1))
     })
 
     result
